@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { userSignUp, userSignin } from "../api/auth"
+import { userSignUp, userSignIn } from "../api/auth"
 
 function Login() {
 
@@ -13,7 +13,25 @@ function Login() {
     const [userEmail, setUserEmail] = useState("")
     const [userType, setUserType] = useState("CUSTOMER");
     const [message, setMessage] = useState("");
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(false);
+
+
+    useEffect(() => {
+        const userType = localStorage.getItem("userType");
+        const token = localStorage.getItem("token")
+        //here itself check whether is token is present or not;
+        if (!token || !userType) {
+            return;
+        } else {
+            if (userType === "ENGINEER") {
+                window.location.href = "/engineer"
+            } else if (userType === "CUSTOMER") {
+                window.location.href = "/customer"
+            } else {
+                window.location.href = "/admin"
+            }
+        }
+    }, [])
 
     const toggleSignup = () => {
         clearState()
@@ -28,6 +46,7 @@ function Login() {
         setError(false);
         setMessage("")
     }
+
     const onSignup = (e) => {
         const data = {
             name: userName,
@@ -52,15 +71,18 @@ function Login() {
 
         //api call
         userSignUp(data)
-            .then(res => res.json())
+            // .then(data => console.log(data))
+            // .then(res => res.json())
             .then(res => {
-                // console.log(res);
+                console.log(res);
                 setError(false);
-                setMessage("signup sucessfull")
-                window.location.href = "/"
+                setMessage("SignUp Sucessfull")
+                // window.location.href = "/"
             })
             .catch((err) => {
-                // console.log(err.message);
+                // console.log(err);
+                // console.log(err.response.data.message);
+                // console.log(err.response.status);
                 if (err.response.status === 400) {
                     // console.log(err.response.data.message);
                     setError(true);
@@ -74,21 +96,30 @@ function Login() {
 
         e.preventDefault();
 
-        userSignin(data)
+        userSignIn(data)
             .then(res => {
-                // console.log(res);
+                console.log(res);
                 setError(false);
-                setMessage("Login Successfull")
+                setMessage("Login Successfull");
 
-                if (res.data.userType === "ENGINEER") {
-                    window.location.href = "/engineer"
-                } else if (res.data.userType === "CUSTOMER") {
-                    window.location.href = "/customer"
-                } else {
-                    window.location.href = "/admin"
-                }
+                localStorage.setItem("name", res.data.name)
+                localStorage.setItem("userId", res.data.userId)
+                localStorage.setItem("userStatus", res.data.userStatus)
+                localStorage.setItem("email", res.data.email)
+                localStorage.setItem("token", res.data.accessToken)
+                localStorage.setItem("userType", res.data.userType)
+
+
+                // if (res.data.userType === "ENGINEER") {
+                //     window.location.href = "/engineer"
+                // } else if (res.data.userType === "CUSTOMER") {
+                //     window.location.href = "/customer"
+                // } else {
+                //     window.location.href = "/admin"
+                // }
             })
             .catch((err) => {
+                // console.log(err);
                 if (err.response.status) {
                     setError(true);
                     setMessage(err.response.data.message)
@@ -114,12 +145,18 @@ function Login() {
         }
     }
 
+    const handleSelect = (e) => {
+        // console.log(e);
+        setUserType(e)
+    }
+
     return <div className="bg-info d-flex justify-content-center align-items-center vh-100">
         <div style={{ width: 30 + "rem" }} className="card p-3 rounded-3 shadow-lg">
 
             <h4 className="text-info">{showSignup ? "Sign Up" : "Log In"}</h4>
 
             <form onSubmit={showSignup ? onSignup : onLogin}>
+
                 <div className="input-group">
                     <input className="form-control m-1" type="text" id="userId" value={userId} onChange={updateSignUpData} placeholder="Userid" />
                 </div>
@@ -145,6 +182,7 @@ function Login() {
                     <>
                         <DropdownButton
                             title={userType}
+                            onSelect={handleSelect}
                             id="userType"
                             variant="light"
                             align="end"
