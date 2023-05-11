@@ -3,7 +3,7 @@ import Login from "./pages/Login";
 import Customer from './pages/Customer';
 import Admin from './pages/Admin';
 import Engineer from './pages/Engineer';
-import { BrowserRouter as Router, Routes, Route, } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (

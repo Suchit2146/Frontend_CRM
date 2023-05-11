@@ -15,6 +15,8 @@ function Login() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState(false);
 
+    // console.log(process.env.REACT_APP_CRM_BACKEND_URL);
+
 
     useEffect(() => {
         const userType = localStorage.getItem("userType");
@@ -199,7 +201,7 @@ function Login() {
                         value={showSignup ? "Sign Up" : "Log In"} />
                 </div>
 
-                <div className="text-info m-1" onClick={toggleSignup}>
+                <div className="text-info m-1 text-center" onClick={toggleSignup}>
                     {
                         showSignup ? "Already have an account ? Log In" : "Don't have an account ? Sign Up"
                     }

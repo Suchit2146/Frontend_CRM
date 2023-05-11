@@ -1,8 +1,8 @@
 import axios from "axios";
 
 
-// const BASE_URL = process.env.REACT_APP_CRM_BACKEND_URL;
-const BASE_URL = "https://relevel-crm-be.herokuapp.com";
+const BASE_URL = process.env.REACT_APP_CRM_BACKEND_URL;
+// const BASE_URL = "https://relevel-crm-be.herokuapp.com";
 // console.log(process.env);
 // console.log(BASE_URL);
 

@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from "axios"
 const BASE_URL = process.env.REACT_APP_CRM_BACKEND_URL;
 // const BASE_URL = "https://relevel-crm-be.herokuapp.com";
 
-export async function getAllTickets(data) {
-    return axios.get(`${BASE_URL}/crm/api/v1/tickets`, {
+export async function getAllUsers(data) {
+    return axios.get(`${BASE_URL}/crm/api/v1/users`, {
         headers: {
             "x-access-token": localStorage.getItem("token")
         }
