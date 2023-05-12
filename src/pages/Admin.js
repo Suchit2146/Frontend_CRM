@@ -1,13 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Sidebar from '../components/Sidebar';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { useState, useEffect } from 'react';
-import { getAllTickets } from "../api/ticket";
+import { getAllTickets, updateTicket } from "../api/ticket";
 import { getAllUsers } from "../api/user"
 import MaterialTable from 'material-table';
-
-import { ThemeProvider, createTheme } from '@mui/material';
+import { Modal, Button } from "react-bootstrap";
+import { Cursor, Textarea } from 'react-bootstrap-icons';
 
 function Admin() {
 
@@ -15,13 +14,9 @@ function Admin() {
 
     const [ticketDetails, setTicketDetails] = useState([]);
     const [ticketStatusCount, setTicketStatusCount] = useState({});
-    const [tableData, setTableData] = useState([]);
-    const [userDeatils, setUserdetails] = useState([])
-
-    const columns = [
-        { title: "name", field: "name" },
-        { title: "email", field: "email" }
-    ]
+    const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+    const [ticketUpdateModal, setTicketUpdateModal] = useState(false);
+    const [userDeatils, setUserdetails] = useState([]);
 
 
     useEffect(() => {
@@ -30,13 +25,14 @@ function Admin() {
     }, []);
 
     const fetchTickets = () => {
+
         getAllTickets()
             .then((res) => {
                 // console.log(res);
-                console.log(res.data);
+                // console.log(res.data);
                 setTicketDetails(res.data)
                 updateTicketsCount(res.data)
-                console.log(res.data);
+                // console.log(res.data);
             })
             .catch((err) => {
                 console.log(err.response);
@@ -47,7 +43,7 @@ function Admin() {
         getAllUsers()
             .then((res) => {
                 setUserdetails(res.data)
-                console.log(res.data);
+                // console.log(res.data);
             })
             .catch((err) => {
                 console.log(err.response);
@@ -73,6 +69,55 @@ function Admin() {
             }
         });
         setTicketStatusCount({ ...data })
+    }
+
+    const editTicket = (ticketDetail) => {
+        // console.log(ticketDetail);
+        setTicketUpdateModal(true);
+        setSelectedCurrTicket(ticketDetail);
+    }
+
+    const closeTicketUpdateModal = () => {
+        setTicketUpdateModal(false)
+    }
+
+    const onTicketUpdate = (e) => {
+
+        // console.log(e.target);
+
+        const fieldName = e.target.name;
+
+        if (fieldName === "title") {
+            selectedCurrTicket.title = e.target.value;
+        } else if (fieldName === "description") {
+            selectedCurrTicket.description = e.target.value;
+        } else if (fieldName === "status") {
+            selectedCurrTicket.status = e.target.value;
+        } else if (fieldName === "assignee") {
+            selectedCurrTicket.assignee = e.target.value;
+        } else if (fieldName === "ticketPriority") {
+            selectedCurrTicket.ticketPriority = e.target.value;
+        }
+
+        setSelectedCurrTicket({ ...selectedCurrTicket })
+    }
+
+    const updateTicketFn = (e) => {
+        e.preventDefault();
+        // console.log(selectedCurrTicket);
+
+        // API CALL
+        updateTicket(selectedCurrTicket)
+            .then((res) => {
+                // console.log(res);
+                console.log("ticket update successfully");
+                setTicketUpdateModal(false);
+                fetchTickets()
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+
     }
 
     return (
@@ -191,8 +236,10 @@ function Admin() {
                                 ]}
 
                                 options={{
+                                    sorting: true,
                                     rowStyle: {
-                                        backgroundColor: "blanchedalmond"
+                                        backgroundColor: "light-grey",
+                                        cursor: "pointer"
                                     }
                                 }}
 
@@ -205,6 +252,7 @@ function Admin() {
 
                         <div style={{ maxWidth: "100%" }}>
                             <MaterialTable
+                                onRowClick={(event, rowdata) => editTicket(rowdata)}
                                 columns={[
                                     { title: 'TICKETID', field: '_id' },
                                     { title: 'TITLE', field: 'title' },
@@ -215,19 +263,77 @@ function Admin() {
                                     { title: 'STATUS', field: 'status' }
 
                                 ]}
+                                title="TICKET RECORDS"
+                                data={ticketDetails}
 
                                 options={{
                                     sorting: true,
                                     rowStyle: {
-                                        backgroundColor: "blanchedalmond"
+                                        backgroundColor: "blanchedalmond",
+                                        Cursor: "pointer"
                                     }
                                 }}
-
-                                title="TICKET RECORDS"
-                                data={ticketDetails}
                             />
-                        </div>
 
+                            <Modal show={ticketUpdateModal} onHide={closeTicketUpdateModal}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Edit Ticket Details</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <form onSubmit={updateTicketFn}>
+                                        <div className="p-1">
+                                            <h5 className='card-subtitle mb-2 text-primary'>Ticket Id: {selectedCurrTicket._id}</h5>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Title</span>
+                                                <input type="text" name='title' value={selectedCurrTicket.title} onChange={onTicketUpdate} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Assignee</span>
+                                                <input type="text" name='assignee' value={selectedCurrTicket.assignee}
+                                                    onChange={onTicketUpdate} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Status</span>
+                                                <input type="text" name='status' value={selectedCurrTicket.status}
+                                                    onChange={onTicketUpdate} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <textarea type="text" className='md-textarea form-control' row="4" name='description'
+                                                    value={selectedCurrTicket.description} onChange={onTicketUpdate} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Priority</span>
+                                                <input type="text" name='ticketPriority' value={selectedCurrTicket.ticketPriority}
+                                                    onChange={onTicketUpdate} />
+                                            </div>
+                                        </div>
+                                        <Button variant='secondary' onClick={closeTicketUpdateModal}>
+                                            Close
+                                        </Button>
+                                        <Button type='submit' variant='primary'>
+                                            Update
+                                        </Button>
+                                    </form>
+
+                                </Modal.Body>
+                            </Modal>
+
+                            {/* <Modal show={true} onHide={()=>{}}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Modal heading</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={()=>{}}>
+                                        Close
+                                    </Button>
+                                    <Button variant="primary" onClick={()=>{}}>
+                                        Save Changes
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal> */}
+
+                        </div>
                     </div>
                 </div>
             </div>
