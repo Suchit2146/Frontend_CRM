@@ -3,10 +3,10 @@ import Sidebar from '../components/Sidebar';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { useState, useEffect } from 'react';
 import { getAllTickets, updateTicket } from "../api/ticket";
-import { getAllUsers } from "../api/user"
+import { getAllUsers, updateUser } from "../api/user"
 import MaterialTable from 'material-table';
 import { Modal, Button } from "react-bootstrap";
-import { Cursor, Textarea } from 'react-bootstrap-icons';
+// import { Cursor, textarea } from 'react-bootstrap-icons';
 
 function Admin() {
 
@@ -16,7 +16,10 @@ function Admin() {
     const [ticketStatusCount, setTicketStatusCount] = useState({});
     const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
     const [ticketUpdateModal, setTicketUpdateModal] = useState(false);
-    const [userDeatils, setUserdetails] = useState([]);
+
+    const [userDetails, setUserdetails] = useState([]);
+    const [selectedCurrUser, setSelectedCurrUser] = useState({});
+    const [userUpdateModal, setUserUpdateModal] = useState(false);
 
 
     useEffect(() => {
@@ -42,12 +45,46 @@ function Admin() {
     const fetchUsers = () => {
         getAllUsers()
             .then((res) => {
-                setUserdetails(res.data)
+                setUserdetails(res.data);
                 // console.log(res.data);
             })
             .catch((err) => {
                 console.log(err.response);
             })
+    }
+
+    const editUser = (userDetail) => {
+        // console.log(userDetail);
+        setUserUpdateModal(true);
+        setSelectedCurrUser(userDetail);
+    }
+
+    const updateUserFn = (e) => {
+        e.preventDefault();
+        // console.log(e);
+
+        const userData = {
+            _id: selectedCurrUser._id,
+            status: selectedCurrUser.userStatus
+        }
+
+        // API CALL
+        updateUser(userData)
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("ticket update successfully");
+                    // console.log(res);
+                    setUserUpdateModal(false)
+                }
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+
+    }
+
+    const closeUserUpdateModal = () => {
+        setUserUpdateModal(false);
     }
 
     const updateTicketsCount = (tickets) => {
@@ -79,6 +116,17 @@ function Admin() {
 
     const closeTicketUpdateModal = () => {
         setTicketUpdateModal(false)
+    }
+
+    const onUserUpdate = (e) => {
+        // console.log(e.target);
+        let userFieldName = e.target.name;
+
+        if (userFieldName === "status") {
+            selectedCurrUser.userStatus = e.target.value
+        }
+
+        setSelectedCurrUser({ ...selectedCurrUser })
     }
 
     const onTicketUpdate = (e) => {
@@ -226,26 +274,62 @@ function Admin() {
 
                         <div style={{ maxWidth: "100%" }}>
                             <MaterialTable
+                                onRowClick={(event, rowData) => editUser(rowData)}
                                 columns={[
                                     { title: 'USERID', field: 'userId' },
                                     { title: 'NAME', field: 'name' },
                                     { title: 'EMAIL', field: 'email' },
                                     { title: 'ROLE', field: 'userTypes' },
                                     { title: 'STATUS', field: 'userStatus' }
-
                                 ]}
+                                title="USER RECORDS"
+                                data={userDetails}
 
                                 options={{
                                     sorting: true,
+                                    filtering: true,
                                     rowStyle: {
                                         backgroundColor: "light-grey",
                                         cursor: "pointer"
                                     }
                                 }}
-
-                                title="USER RECORDS"
-                                data={userDeatils}
                             />
+
+                            <Modal show={userUpdateModal} onHide={closeUserUpdateModal}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Edit User Details</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <form onSubmit={updateUserFn}>
+                                        <div className="p-1">
+                                            <h5 className='card-subtitle mb-2 text-primary'>UserId: {selectedCurrUser.userId} </h5>
+                                            <h5 className='card-subtitle mb-2 text-primary'>UserType: {selectedCurrUser.userTypes} </h5>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Name</span>
+                                                <input type="text" disabled name='name' value={selectedCurrUser.name} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Email</span>
+                                                <input type="text" disabled name='email' value={selectedCurrUser.email} />
+                                            </div>
+                                            <div className="input-group mb-3">
+                                                <span className='input-group-text'>Status</span>
+                                                <select name='status' value={selectedCurrUser.userStatus} onChange={onUserUpdate} className='form-select'>
+                                                    <option value="APPROVED">APPROVED</option>
+                                                    <option value="PENDING">PENDING</option>
+                                                    <option value="REJECTED">REJECTED</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <Button variant='secondary' onClick={closeUserUpdateModal}>
+                                            Close
+                                        </Button>
+                                        <Button type='submit' variant='primary'>
+                                            Update
+                                        </Button>
+                                    </form>
+                                </Modal.Body>
+                            </Modal>
                         </div>
 
                         <hr />
@@ -317,21 +401,6 @@ function Admin() {
 
                                 </Modal.Body>
                             </Modal>
-
-                            {/* <Modal show={true} onHide={()=>{}}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={()=>{}}>
-                                        Close
-                                    </Button>
-                                    <Button variant="primary" onClick={()=>{}}>
-                                        Save Changes
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal> */}
 
                         </div>
                     </div>

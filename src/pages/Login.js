@@ -33,7 +33,7 @@ function Login() {
                 window.location.href = "/admin"
             }
         }
-    }, [])
+    })
 
     const toggleSignup = () => {
         clearState()
@@ -76,10 +76,10 @@ function Login() {
             // .then(data => console.log(data))
             // .then(res => res.json())
             .then(res => {
-                console.log(res);
+                // console.log(res);
                 setError(false);
                 setMessage("SignUp Sucessfull")
-                // window.location.href = "/"
+                window.location.href = "/"
             })
             .catch((err) => {
                 // console.log(err);
@@ -100,7 +100,12 @@ function Login() {
 
         userSignIn(data)
             .then(res => {
-                console.log(res);
+
+                if (res.data.message) {
+                    setMessage(res.data.message);
+                    setError(true)
+                    return;
+                }
                 setError(false);
                 setMessage("Login Successfull");
 
@@ -112,13 +117,13 @@ function Login() {
                 localStorage.setItem("userType", res.data.userType)
 
 
-                // if (res.data.userType === "ENGINEER") {
-                //     window.location.href = "/engineer"
-                // } else if (res.data.userType === "CUSTOMER") {
-                //     window.location.href = "/customer"
-                // } else {
-                //     window.location.href = "/admin"
-                // }
+                if (res.data.userType === "ENGINEER") {
+                    window.location.href = "/engineer"
+                } else if (res.data.userType === "CUSTOMER") {
+                    window.location.href = "/customer"
+                } else {
+                    window.location.href = "/admin"
+                }
             })
             .catch((err) => {
                 // console.log(err);
