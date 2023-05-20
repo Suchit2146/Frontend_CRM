@@ -1,156 +1,23 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import { useState, useEffect } from 'react';
-import { getAllTickets, updateTicket } from "../api/ticket";
-import { getAllUsers, updateUser } from "../api/user"
+// import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import MaterialTable from 'material-table';
 import { Modal, Button } from "react-bootstrap";
 import StatusDashboard from '../components/statusDashboard/statusDashboard';
-import { createTicketsCount } from "../handlers/ticketHandler"
-// import { Cursor, textarea } from 'react-bootstrap-icons';
+import useFetchTickets from '../hooks/useFetchTicket';
+import useFetchUsers from '../hooks/useFetchUser';
+import useUserUpdate from '../hooks/useUserUpdate';
+import useTicketUpdate from '../hooks/useTicketUpdate';
 
 function Admin() {
 
-    const [ticketDetails, setTicketDetails] = useState([]);
-    const [ticketStatusCount, setTicketStatusCount] = useState({});
-    const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
-    const [ticketUpdateModal, setTicketUpdateModal] = useState(false);
-
-    const [userDetails, setUserdetails] = useState([]);
-    const [selectedCurrUser, setSelectedCurrUser] = useState({});
-    const [userUpdateModal, setUserUpdateModal] = useState(false);
+    const [ticketDetails, fetchTickets] = useFetchTickets();
+    const [userDetails] = useFetchUsers();
+    const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
+    const {closeUserUpdateModal,onUserUpdate,updateUserFn,editUser,selectedCurrUser,userUpdateModal} = useUserUpdate()
 
 
-    useEffect(() => {
-        fetchTickets();
-        fetchUsers();
-    }, []);
-
-    const fetchTickets = () => {
-
-        getAllTickets()
-            .then((res) => {
-                // console.log(res);
-                // console.log(res.data);
-                setTicketDetails(res.data)
-                updateTicketsCount(res.data)
-                // console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err.response);
-            })
-    }
-
-    const fetchUsers = () => {
-        getAllUsers()
-            .then((res) => {
-                setUserdetails(res.data);
-                // console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err.response);
-            })
-    }
-
-    const editUser = (userDetail) => {
-        // console.log(userDetail);
-        setUserUpdateModal(true);
-        setSelectedCurrUser(userDetail);
-    }
-
-    const updateUserFn = (e) => {
-        e.preventDefault();
-        // console.log(e);
-
-        const userData = {
-            _id: selectedCurrUser._id,
-            status: selectedCurrUser.userStatus
-        }
-
-        // API CALL
-        updateUser(userData)
-            .then((res) => {
-                if (res.status === 200) {
-                    console.log("ticket update successfully");
-                    // console.log(res);
-                    setUserUpdateModal(false)
-                }
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            })
-
-    }
-
-    const closeUserUpdateModal = () => {
-        setUserUpdateModal(false);
-    }
-
-    const updateTicketsCount = (tickets) => {
-        const ticketsCount = createTicketsCount(tickets)
-        setTicketStatusCount({ ...ticketsCount })
-    }
-
-    const editTicket = (ticketDetail) => {
-        // console.log(ticketDetail);
-        setTicketUpdateModal(true);
-        setSelectedCurrTicket(ticketDetail);
-    }
-
-    const closeTicketUpdateModal = () => {
-        setTicketUpdateModal(false)
-    }
-
-    const onUserUpdate = (e) => {
-        // console.log(e.target);
-        let userFieldName = e.target.name;
-
-        if (userFieldName === "status") {
-            selectedCurrUser.userStatus = e.target.value
-        }
-
-        setSelectedCurrUser({ ...selectedCurrUser })
-    }
-
-    const onTicketUpdate = (e) => {
-
-        // console.log(e.target);
-
-        const fieldName = e.target.name;
-
-        if (fieldName === "title") {
-            selectedCurrTicket.title = e.target.value;
-        } else if (fieldName === "description") {
-            selectedCurrTicket.description = e.target.value;
-        } else if (fieldName === "status") {
-            selectedCurrTicket.status = e.target.value;
-        } else if (fieldName === "assignee") {
-            selectedCurrTicket.assignee = e.target.value;
-        } else if (fieldName === "ticketPriority") {
-            selectedCurrTicket.ticketPriority = e.target.value;
-        }
-
-        setSelectedCurrTicket({ ...selectedCurrTicket })
-    }
-
-    const updateTicketFn = (e) => {
-        e.preventDefault();
-        // console.log(selectedCurrTicket);
-
-        // API CALL
-        updateTicket(selectedCurrTicket)
-            .then((res) => {
-                // console.log(res);
-                console.log("ticket update successfully");
-                setTicketUpdateModal(false);
-                fetchTickets()
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-
-    }
+ 
 
     return (
         <div className='row bg-light'>
@@ -163,7 +30,7 @@ function Admin() {
                     <div>
                         <div className="row text-center">
 
-                            <StatusDashboard statusDetails={ticketStatusCount} />
+                            <StatusDashboard ticketDetails={ticketDetails} />
 
                         </div>
 

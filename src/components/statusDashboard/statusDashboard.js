@@ -1,14 +1,15 @@
 import React from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import { createTicketsCount } from '../../handlers/ticketHandler';
 
 
 const StatusDashboard = (props) => {
-    console.log(props.statusDetails);
+    
+    // console.log(props.ticketDetails);
+    const statusDetails = createTicketsCount(props.ticketDetails)
+
     const userName = localStorage.getItem("name");
     const userType = localStorage.getItem("userType");
-
-    const statusDetails = props.statusDetails
-
 
     return (
         <div className='col my-4'>
