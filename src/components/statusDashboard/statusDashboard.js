@@ -4,7 +4,7 @@ import { createTicketsCount } from '../../handlers/ticketHandler';
 
 
 const StatusDashboard = (props) => {
-    
+
     // console.log(props.ticketDetails);
     const statusDetails = createTicketsCount(props.ticketDetails)
 
