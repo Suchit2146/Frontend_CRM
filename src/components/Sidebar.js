@@ -1,13 +1,11 @@
 import React from 'react';
 import { CSidebarToggler, CNavItem, CSidebar, CSidebarNav, CNavTitle } from "@coreui/react";
 import { Link } from 'react-router-dom';
+import { logout } from '../handlers/logoutHandler';
 
 
 function Sidebar() {
-    const logout = () => {
-        localStorage.clear();
-        window.location.href = "/"
-    }
+
     return (
         <CSidebar unfoldable className='vh-100 bg-black' >
             <CSidebarNav>

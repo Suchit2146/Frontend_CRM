@@ -11,6 +11,11 @@ function Customer() {
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
 
+    // const userType = localStorage.getItem("userType");
+    // if (userType !== constant.userTypes.customer) {
+    //     return <h1>Insufficient permission yo access</h1>
+    // }
+
     return (
         <div className='row bg-light'>
             <div className="col-1">

@@ -16,7 +16,13 @@ function Admin() {
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const [userDetails] = useFetchUsers();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
-    const { closeUserUpdateModal, onUserUpdate, updateUserFn, editUser, selectedCurrUser, userUpdateModal } = useUserUpdate()
+    const { closeUserUpdateModal, onUserUpdate, updateUserFn, editUser, selectedCurrUser, userUpdateModal } = useUserUpdate();
+
+    // const userType = localStorage.getItem("userType");
+
+    // if (userType !== constant.userTypes.admin) {
+    //     return <h1>Insufficient permission yo access</h1>
+    // }
 
 
     return (

@@ -7,9 +7,16 @@ import useTicketUpdate from '../hooks/useTicketUpdate';
 import TicketUpdateModal from '../components/TicketUpdateModal/TicketUpdateModal';
 
 
+
 function Engineer() {
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
+   
+    // const userType = localStorage.getItem("userType");
+
+    // if (userType !== constant.userTypes.engineer) {
+    //     return <h1>Insufficient permission yo access</h1>
+    // }
 
     return (
         <div className='row bg-light'>
