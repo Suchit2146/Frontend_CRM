@@ -5,11 +5,17 @@ import useFetchTickets from '../hooks/useFetchTicket';
 import useTicketUpdate from '../hooks/useTicketUpdate';
 import TicketUpdateModal from '../components/TicketUpdateModal/TicketUpdateModal';
 import TicketsTable from '../components/TicketMaterialTable/ticketsTable';
+import TicketCreationModal from '../components/TicketCreation/TicketCreationModal';
+import useCreateTicket from '../hooks/useCreateTicket';
 
 
 function Customer() {
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
+
+    const { createTicketModal, closeCreateTicketUpdateModal, openCreateTicketUpdateModal } = useCreateTicket()
+
+
 
     // const userType = localStorage.getItem("userType");
     // if (userType !== constant.userTypes.customer) {
@@ -26,10 +32,20 @@ function Customer() {
 
                     <StatusDashboard ticketDetails={ticketDetails} />
                     <TicketsTable ticketDetails={ticketDetails} editTicket={editTicket} title="TICKETS RAISED BY YOU" />
+
+                    <div>
+                        <input className='bg-primary border-white text-white' style={{ width: "100%" }}
+                            onClick={openCreateTicketUpdateModal} type="submit" value="Raise Ticket" />
+                    </div>
+
                     <TicketUpdateModal disabled closeTicketUpdateModal={closeTicketUpdateModal} ticketUpdateModal={ticketUpdateModal} updateTicketFn={updateTicketFn} selectedCurrTicket={selectedCurrTicket} onTicketUpdate={onTicketUpdate} />
+
+                    {
+                        <TicketCreationModal show={createTicketModal} onClose={closeCreateTicketUpdateModal} />
+                    }
+
                 </div>
             </div>
-
         </div>
     )
 }
