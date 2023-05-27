@@ -13,8 +13,8 @@ function Auth(props) {
         return <UnAuthenicated />
     }
 
-    // const {page} = props;
-    const page = location.pathname.slice(1)
+    const page = location.pathname.split("/")[1]
+    // const page = location.pathname.slice(1)
 
     let requiredUserType = null
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 // import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import MaterialTable from 'material-table';
@@ -10,9 +10,11 @@ import useUserUpdate from '../hooks/useUserUpdate';
 import useTicketUpdate from '../hooks/useTicketUpdate';
 import TicketsTable from '../components/TicketMaterialTable/ticketsTable';
 import TicketUpdateModal from '../components/TicketUpdateModal/TicketUpdateModal';
+import { useLocation } from 'react-router-dom';
 
 function Admin() {
 
+    const location = useLocation()
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const [userDetails] = useFetchUsers();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
@@ -23,7 +25,21 @@ function Admin() {
     // if (userType !== constant.userTypes.admin) {
     //     return <h1>Insufficient permission yo access</h1>
     // }
+    useEffect(() => {
+        const pathName = location.pathname;
 
+        const userId = pathName.split("/")[2]
+        if (!userId) {
+            return;
+        }
+        // openUserUpdateModal();
+        const user = userDetails.find((user) => user.userId===userId)
+        // console.log(user);
+        if(!user){
+            return
+        }
+        editUser(user)
+    },[userDetails])
 
     return (
         <div className='row bg-light'>

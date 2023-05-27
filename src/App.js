@@ -19,8 +19,10 @@ function App() {
           {/* <Route path="/" element={<Auth><Admin/></Auth>} /> */}
           <Route path="/" element={<Login />} />
           <Route path="/customer" element={<Auth page="customer"><Customer /></Auth>} />
+          <Route path='/customer/createTicket' element={<Auth page="customer"><Customer /></Auth>} />
           <Route path="/engineer" element={<Auth page="engineer"><Engineer /></Auth>} />
-          <Route path="/admin" element={<Auth page="admin"><Admin /></Auth>} />
+          <Route path='/admin' element={<Auth page="admin"><Admin /></Auth>} />
+          <Route path="/admin/:userId" element={<Auth page="admin"><Admin /></Auth>} />
         </Routes>
       </Router>
       </ThemeProvider>

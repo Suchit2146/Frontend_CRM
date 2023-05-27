@@ -7,13 +7,28 @@ import TicketUpdateModal from '../components/TicketUpdateModal/TicketUpdateModal
 import TicketsTable from '../components/TicketMaterialTable/ticketsTable';
 import TicketCreationModal from '../components/TicketCreation/TicketCreationModal';
 import useCreateTicket from '../hooks/useCreateTicket';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 
 function Customer() {
+
+    const location = useLocation()
     const [ticketDetails, fetchTickets] = useFetchTickets();
     const { editTicket, ticketUpdateModal, closeTicketUpdateModal, onTicketUpdate, updateTicketFn, selectedCurrTicket } = useTicketUpdate(fetchTickets);
 
-    const { createTicketModal, closeCreateTicketUpdateModal, openCreateTicketUpdateModal } = useCreateTicket()
+    const { createTicketModal, closeCreateTicketUpdateModal, openCreateTicketUpdateModal } = useCreateTicket();
+
+    useEffect(()=>{
+        const path= location.pathname;
+
+        const isCreateTicketTrue = path.split("/")[2]==="createTicket";
+        if(isCreateTicketTrue){
+            openCreateTicketUpdateModal()
+        }
+
+        
+    })
 
 
 

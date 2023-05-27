@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { updateUser } from "../api/user";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const useUserUpdate = () => {
+    const navigate = useNavigate();
+    const location= useLocation();
     const [selectedCurrUser, setSelectedCurrUser] = useState({});
     const [userUpdateModal, setUserUpdateModal] = useState(false);
 
@@ -9,6 +12,8 @@ const useUserUpdate = () => {
         // console.log(userDetail);
         setUserUpdateModal(true);
         setSelectedCurrUser(userDetail);
+        let url =`${location.pathname}/${userDetail.userId}`
+        navigate(url)
     }
 
     const updateUserFn = (e) => {
@@ -37,6 +42,8 @@ const useUserUpdate = () => {
 
     const closeUserUpdateModal = () => {
         setUserUpdateModal(false);
+        const url = `/admin`;
+        navigate(url)
     }
 
     const onUserUpdate = (e) => {
@@ -49,7 +56,7 @@ const useUserUpdate = () => {
 
         setSelectedCurrUser({ ...selectedCurrUser })
     }
-    return {closeUserUpdateModal,onUserUpdate,updateUserFn,editUser,selectedCurrUser,userUpdateModal}
+    return { closeUserUpdateModal, onUserUpdate, updateUserFn, editUser, selectedCurrUser, userUpdateModal }
 }
 
 export default useUserUpdate;
